@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+enum CurrencyType
+{
+	EUR = 0;
+	USD = 1;
+	GBP = 2;
+	CHF = 3;
+	SEK = 4;
+	AUD = 5;
+	CAD = 6;
+	CZK = 7;
+	JPY = 8;
+	RUB = 9;
+}
+
+message Currency
+{
+	CurrencyType type = 1;
+	message Decimal
+	{
+		uint32 val = 1;
+		uint32 precision = 2;
+	}
+	Decimal value = 2;  
+}
+
+message CurrencyTypes
+{
+	repeated CurrencyType types = 1;
+}
+
+service CurrencyService
+{
+	rpc GetCurrencies(CurrencyTypes) returns (stream Currency) {}
+}
