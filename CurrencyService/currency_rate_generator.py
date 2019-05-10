@@ -34,7 +34,7 @@ class CurrencyRateGenerator:
 
     def _currencyUpdateTask(self):
         while True:
-            print("\nHi")
+            #print("\nHi")
             self._changesLock.acquire()
             if self._threadExitFlag:
                 self._threadExitFlag.release()
@@ -52,12 +52,12 @@ class CurrencyRateGenerator:
     def _updateCurrency(self):
         for currencyType in CurrencyType.keys():
             change = random.uniform(-1,1)
-            print(currencyType + " chane: " + str(change))
+            #print(currencyType + " change: " + str(change))
             currVal = self._currencyValues[CurrencyType.Value(currencyType)]
             if currVal + change > 0:
                 self._currencyValues[CurrencyType.Value(currencyType)] += change
-            print(currVal)
-            print(currVal + change)
+            #print(currVal)
+            #print(currVal + change)
 
     def _initCurrencyValues(self):
         currencyValues = {}
@@ -67,6 +67,7 @@ class CurrencyRateGenerator:
         return currencyValues
 
     def getCurrenciesRate(self, currencyList):
+        #print("getCurrenciesRate")
         self._newUpdate.acquire()
         self._newUpdate.wait()
         self._newUpdate.release()
@@ -82,12 +83,14 @@ class CurrencyRateGenerator:
 class CurrencyService(currencyservice_pb2_grpc.CurrencyServiceServicer):
 
     def __init__(self, currencyRateGenerator: CurrencyRateGenerator):
-        self._currencyRateGenerator = CurrencyRateGenerator
+        #print("Currency service init")
+        self._currencyRateGenerator = currencyRateGenerator
 
     def GetCurrencies(self, request, context):
+        #print("GetCurrencies function")
         while True:
             print("Trying to obtain update")
-            update = self._currencyRateGenerator.getCurrenciesRate(request.CurrencyTypes)
+            update = self._currencyRateGenerator.getCurrenciesRate(request.types)
             print("Update obtained")
             for currency, value in update:
                 result = Currency(type == currency, value = value)

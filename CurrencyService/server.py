@@ -17,13 +17,14 @@ class Server:
         self._terminationLock.acquire()
 
     def start(self):
+        print("Server start")
         self._currencyRateGenerator = CurrencyRateGenerator()
         self._currencyRateGenerator.start()
         self._server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         currencyservice_pb2_grpc.add_CurrencyServiceServicer_to_server(
             CurrencyService(self._currencyRateGenerator), self._server
         )
-        self._server.add_insecure_port('[::]:50051')
+        self._server.add_insecure_port('localhost:50051')
         self._server.start()
         self.await_termination()
 
