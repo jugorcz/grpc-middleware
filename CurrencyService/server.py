@@ -8,8 +8,6 @@ from currency_rate_generator import CurrencyRateGenerator
 from currency_rate_generator import CurrencyService
 
 
-print("Hello world")
-
 class Server:
 
     def __init__(self):
@@ -34,5 +32,6 @@ class Server:
 
 
 if __name__ == '__main__':
+    print("Hello world")
     server = Server()
     server.start()
