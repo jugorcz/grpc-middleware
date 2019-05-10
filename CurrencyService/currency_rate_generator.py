@@ -5,7 +5,6 @@ from time import sleep
 from currencyservice_pb2 import CurrencyType
 from currencyservice_pb2 import Currency
 import currencyservice_pb2_grpc
-from decimal import Decimal
 
 class CurrencyRateGenerator:
     timeDivisor = 10
@@ -95,5 +94,8 @@ class CurrencyService(currencyservice_pb2_grpc.CurrencyServiceServicer):
             update = self._currencyRateGenerator.getCurrenciesRate(request.types)
             print("Update obtained")
             for currencyType, value in update:
-                result = Currency(type = currencyType, value = Currency.Decimal(val = 1, precision = 34))
+                v = int(value)
+                p = int((value - int(value)) * 100)
+                print(str(currencyType) + ": " + str(v) + "." + str(p)) 
+                result = Currency(type = currencyType, value = Currency.Decimal(val = v, precision = p))
                 yield result
