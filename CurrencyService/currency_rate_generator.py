@@ -3,7 +3,9 @@ import random
 import math
 from time import sleep
 from currencyservice_pb2 import CurrencyType
+from currencyservice_pb2 import Currency
 import currencyservice_pb2_grpc
+from decimal import Decimal
 
 class CurrencyRateGenerator:
     timeDivisor = 10
@@ -67,14 +69,14 @@ class CurrencyRateGenerator:
         return currencyValues
 
     def getCurrenciesRate(self, currencyList):
-        #print("getCurrenciesRate")
+        print("getCurrenciesRate")
         self._newUpdate.acquire()
         self._newUpdate.wait()
         self._newUpdate.release()
         self._changesLock.acquire()
         result = []
-        for currency in currencyList:
-            result.append((currency, self._currencyValues[currency]))
+        for currencyType in currencyList:
+            result.append((currencyType, self._currencyValues[currencyType]))
         self._changesLock.release()
         return result
 
@@ -89,9 +91,9 @@ class CurrencyService(currencyservice_pb2_grpc.CurrencyServiceServicer):
     def GetCurrencies(self, request, context):
         #print("GetCurrencies function")
         while True:
-            print("Trying to obtain update")
+            print("\n\nTrying to obtain update")
             update = self._currencyRateGenerator.getCurrenciesRate(request.types)
             print("Update obtained")
-            for currency, value in update:
-                result = Currency(type == currency, value = value)
+            for currencyType, value in update:
+                result = Currency(type = currencyType, value = Currency.Decimal(val = 1, precision = 34))
                 yield result
