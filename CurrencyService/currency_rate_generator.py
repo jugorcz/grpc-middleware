@@ -1,13 +1,12 @@
 from threading import Condition, Lock, Thread
 import random
-import math
 from time import sleep
 from currencyservice_pb2 import CurrencyType
 from currencyservice_pb2 import Currency
 import currencyservice_pb2_grpc
 
+
 class CurrencyRateGenerator:
-    timeDivisor = 10
 
     def __init__(self):
         self._currencyValues = self._initCurrencyValues()
@@ -32,7 +31,6 @@ class CurrencyRateGenerator:
         self._newUpdate.notifyAll()
         self._newUpdate.release()
 
-
     def _currencyUpdateTask(self):
         while True:
             #print("\nHi")
@@ -40,7 +38,6 @@ class CurrencyRateGenerator:
             if self._threadExitFlag:
                 self._threadExitFlag.release()
                 return None
-
             timestampDelta = random.randint(1,10)
             self._timestamp += timestampDelta
             self._updateCurrency()
@@ -57,8 +54,6 @@ class CurrencyRateGenerator:
             currVal = self._currencyValues[CurrencyType.Value(currencyType)]
             if currVal + change > 0:
                 self._currencyValues[CurrencyType.Value(currencyType)] += change
-            #print(currVal)
-            #print(currVal + change)
 
     def _initCurrencyValues(self):
         currencyValues = {}
@@ -80,7 +75,6 @@ class CurrencyRateGenerator:
         return result
 
 
-
 class CurrencyService(currencyservice_pb2_grpc.CurrencyServiceServicer):
 
     def __init__(self, currencyRateGenerator: CurrencyRateGenerator):
@@ -97,5 +91,5 @@ class CurrencyService(currencyservice_pb2_grpc.CurrencyServiceServicer):
                 v = int(value)
                 p = int((value - int(value)) * 100)
                 print(str(currencyType) + ": " + str(v) + "." + str(p)) 
-                result = Currency(type = currencyType, value = Currency.Decimal(val = v, precision = p))
+                result = Currency(type=currencyType, value=Currency.Decimal(val=v, precision=p))
                 yield result
